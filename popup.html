@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meesho Shipping Fixer - 5 Variations Tester</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body class="extension-popup">
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <div class="logo-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Meesho Shipping Fixer</h1>
+          <span class="version-tag">5 Variations &amp; Empirical Shipping Tester</span>
+        </div>
+      </div>
+      <div id="connectionStatus" class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="connectionText">Checking Tab...</span>
+      </div>
+    </header>
+
+    <!-- Notification Toast -->
+    <div id="toastMessage" class="toast hidden"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- 1. Upload Dropzone Section -->
+      <section id="uploadSection" class="card dropzone-card">
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/avif" class="hidden">
+        <div id="dropzoneArea" class="dropzone-area">
+          <div class="dropzone-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="dropzone-text">
+            <strong>Click to upload or drag &amp; drop any product photo</strong>
+            <span>Supports any product: Apparel, Jewelry, Electronics, Footwear, Home &amp; Kitchen, Beauty, Tools, Toys &amp; more</span>
+          </div>
+          <button type="button" id="btnSelectFile" class="btn btn-primary btn-sm">
+            Browse Product Image
+          </button>
+        </div>
+
+        <!-- Optional: Import from open Meesho page if an image is detected -->
+        <div id="tabImportNotice" class="tab-import-box hidden">
+          <span>Found product photo on open Meesho tab</span>
+          <button type="button" id="btnImportTabPhoto" class="btn btn-link">
+            Import from Tab
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. Variations & Shipping Comparison Section -->
+      <section id="variationsSection" class="card variations-card hidden">
+        <div class="card-header">
+          <div>
+            <h2>5 Testing Variations Gallery</h2>
+            <span class="text-subtle">Different clean backgrounds, framing &amp; whitespace</span>
+          </div>
+          <button type="button" id="btnResetImage" class="btn btn-ghost btn-xs" title="Upload another product image">
+            + Upload Another
+          </button>
+        </div>
+
+        <!-- Top Controls: Generate Button & Baseline Shipping -->
+        <div class="top-test-bar">
+          <button type="button" id="btnGenerate5" class="btn btn-primary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span id="btnGenerate5Text">Generate 5 Variations</span>
+          </button>
+
+          <div class="baseline-box">
+            <span>Baseline: ₹</span>
+            <input type="number" id="inputBaselineShipping" value="80" class="mini-input">
+          </div>
+        </div>
+
+        <!-- Lowest Verified Charge Banner -->
+        <div id="lowestVerifiedBanner" class="lowest-banner hidden">
+          <div class="lowest-info">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2">
+              <circle cx="12" cy="8" r="7"/>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+            </svg>
+            <div>
+              <strong id="lowestChargeText">Lowest Verified: ₹45</strong>
+              <span id="lowestVarText" class="lowest-sub">Variation 1 (Standard White)</span>
+            </div>
+          </div>
+          <span id="lowestSavingsText" class="savings-tag">-₹35 (-44%)</span>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="generatingOverlay" class="generating-overlay hidden">
+          <div class="spinner"></div>
+          <span id="generatingStatusText">Generating 5 realistic studio variations...</span>
+        </div>
+
+        <!-- Original Product Preview -->
+        <div class="original-strip">
+          <div class="orig-thumb">
+            <img id="imgOriginalThumb" src="" alt="Original">
+          </div>
+          <div class="orig-details">
+            <span class="orig-title">Original Product Image</span>
+            <span id="origMeta" class="orig-meta">Loading...</span>
+          </div>
+          <button type="button" id="btnReadMeeshoShipping" class="btn btn-outline btn-xs hidden" title="Read shipping charge currently shown on Meesho">
+            Detect Page Fee
+          </button>
+        </div>
+
+        <!-- Variations List -->
+        <div id="variationsList" class="variations-stack">
+          <!-- Populated dynamically via popup.js -->
+        </div>
+
+        <!-- Ranked Shipping Comparison List -->
+        <div id="rankedSection" class="ranked-section hidden">
+          <div class="ranked-header">
+            <h3>Verified Shipping Charges (Lowest to Highest)</h3>
+            <span id="testedCountLabel" class="tested-count">0 of 5 Tested</span>
+          </div>
+          <div id="rankedList" class="ranked-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Transparent Ethical Disclaimer (Requirement 4 & 10) -->
+        <p class="ethics-notice">
+          • Preserves 100% of authentic product colors, details, shape, and proportions.<br>
+          • <strong>Important:</strong> Changing an image alone cannot guarantee lower shipping fees. Test variations on Meesho and record the actual displayed charge honestly.
+        </p>
+      </section>
+    </main>
+
+    <!-- Confirmation Modal for Meesho Form Attachment -->
+    <div id="confirmModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h3>Test Variation on Meesho Draft</h3>
+        <p id="modalVariationDesc">This will attach the selected variation to the catalog draft upload slot on your open Meesho tab.</p>
+        <p class="modal-note">Package weight, dimensions, and prices remain untouched. Form is never automatically submitted.</p>
+        <div class="modal-actions">
+          <button type="button" id="btnCancelModal" class="btn btn-ghost btn-sm">Cancel</button>
+          <button type="button" id="btnConfirmApply" class="btn btn-primary btn-sm">Attach to Draft</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

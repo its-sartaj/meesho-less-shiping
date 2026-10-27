@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Meesho Less Shipping - 5 Variations Optimizer",
+  "version": "2.0.0",
+  "description": "Universal product framing, background cleanup, and whitespace optimizer to empirically test and reduce Meesho shipping charges (from ₹80 to ₹45-₹56).",
+  "homepage_url": "https://github.com/its-sartaj/meesho-less-shiping",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://supplier.meesho.com/*",
+    "https://*.meesho.com/*",
+    "http://supplier.meesho.com/*",
+    "http://*.meesho.com/*",
+    "*://*.meesho.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://supplier.meesho.com/*",
+        "https://*.meesho.com/*",
+        "http://supplier.meesho.com/*",
+        "http://*.meesho.com/*",
+        "*://*.meesho.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
